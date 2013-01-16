@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+
+require File.join(File.dirname(__FILE__), '../', 'app', 'santander_funds_importer')
+require File.join(File.dirname(__FILE__), '../', 'app', 'tempo_db_repository')
+
+puts "Starting import process.."
+repository = TempoDbRepository.new
+importer = SantanderFundsImporter.new
+
+repository.start_at(importer.measured_at)
+puts "Starting at #{importer.measured_at}"
+importer.each_daily_deltas do |fund_delta|
+  repository.add_fund_delta(fund_delta)
+  puts "Name #{fund_delta.name} value #{fund_delta.daily_delta}"
+end
+repository.commit
+puts "Import process finished successfully"
