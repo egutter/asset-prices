@@ -1,2 +1,2 @@
-require File.join(File.dirname(__FILE__), 'assets_prices')
+require './app/asset_prices.rb' 
 run Sinatra::Application
