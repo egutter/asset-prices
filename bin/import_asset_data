@@ -9,6 +9,10 @@ importer = SantanderFundsImporter.new
 
 repository.start_at(importer.measured_at)
 puts "Starting at #{importer.measured_at}"
+if repository.has_values_at?(importer.measured_at)
+  puts "Importer already run. Halting process..."
+  return
+end
 importer.each_daily_deltas do |fund_delta|
   repository.add_fund_delta(fund_delta)
   puts "Name #{fund_delta.name} value #{fund_delta.daily_delta}"
