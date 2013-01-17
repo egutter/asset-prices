@@ -31,7 +31,7 @@ class SantanderFundsImporter
       row_childs = asset_row.children
       fund_name = row_childs[0].try(:text).try(:strip)
       if row_childs.count == 12 && !exclude?(fund_name)
-        fund_daily_delta = row_childs[4].text.strip.gsub(',', '.').to_f
+        fund_daily_delta = parse_delta(row_childs[4].text.strip) 
         yield FundDelta.new(fund_name, fund_daily_delta)
       end
     end
@@ -41,5 +41,9 @@ class SantanderFundsImporter
 
   def exclude?(fund_name)
     (fund_name.nil? || FUNDS_TO_EXCLUDE.include?(fund_name))
+  end
+
+  def parse_delta(delta_as_string)
+    delta_as_string.gsub(',', '.').gsub(')', '').gsub('(','-').to_f
   end
 end
