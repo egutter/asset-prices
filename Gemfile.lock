@@ -1,6 +1,7 @@
 GEM
   remote: http://rubygems.org/
   specs:
+    haml (3.1.4)
     json (1.7.6)
     listen (0.7.2)
     nokogiri (1.5.5)
@@ -21,6 +22,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  haml
   nokogiri
   rerun
   sinatra
