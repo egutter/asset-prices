@@ -1,4 +1,5 @@
 require 'tempodb'
+require "#{File.dirname(__FILE__)}/fund_result"
 
 class TempoDbRepository
 
@@ -32,5 +33,23 @@ class TempoDbRepository
   def read_at(ts)
     @client.read(Time.utc(ts.year, ts.month, ts.day, 0, 0, 0), Time.utc(ts.year, ts.month, ts.day, 23, 59, 59))
   end
+
+  def all_funds_from(start)
+    result = FundResult.new  
+    get_series.collect do |series|
+      result.add_fund(series.key, get_data_sets(series, start))
+    end
+    result
+  end
+
+  private
+
+  def get_data_sets(series, start)
+    @client.read_id(series.id, start, Time.now)
+  end
+
+  def get_series
+    @client.get_series
+  end  
 end
 

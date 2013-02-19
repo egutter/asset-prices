@@ -1,0 +1,56 @@
+!!!
+%html
+  %head
+    %script{:type=>'text/javascript', :src=>'https://www.google.com/jsapi'}
+    :javascript
+      google.load('visualization', '1', {packages:['table', 'motionchart', 'corechart']});
+      google.setOnLoadCallback(drawCharts);
+      function drawCharts() {
+        drawTable();
+        drawLineChart();
+        drawMotionChart();
+      }
+      function drawMotionChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Fund');
+        data.addColumn('date', 'Date');
+        data.addColumn('number', 'Performance');
+        data.addRows([#{@assets.render_motion_chart_rows()}]);
+        var chart = new google.visualization.MotionChart(document.getElementById('motion_chart_div'));
+        chart.draw(data, {width: 900, height:500});
+      }
+
+      function drawLineChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Date', '#{@assets.fund_names.join("','")}'],
+          [#{@assets.join_data_points('],[')}]
+        ]);
+        var options = {
+          title: 'Funds Performance',
+          height: 400
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+
+      function drawTable() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Fund');
+        data.addColumn('number', 'Count');
+        data.addColumn('number', 'Sum');
+        data.addColumn('number', 'Mean');
+        data.addColumn('number', 'Max');
+        data.addColumn('number', 'Min');
+        data.addColumn('number', 'StdDev');
+      
+        data.addRows([[#{@assets.join_summary('],[')}]]);
+
+        var table = new google.visualization.Table(document.getElementById('table_div'));
+        table.draw(data, {showRowNumber: true});
+      }
+  %body
+    %h1 Fund Summary
+    #table_div
+    #chart_div
+    #motion_chart_div
