@@ -7,8 +7,17 @@
       google.setOnLoadCallback(drawCharts);
       function drawCharts() {
         drawTable();
-        drawLineChart();
         drawMotionChart();
+        drawCumulativeMotionChart();
+      }
+      function drawCumulativeMotionChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Fund');
+        data.addColumn('date', 'Date');
+        data.addColumn('number', 'Cumulative Performance');
+        data.addRows([#{@assets.render_cumulative_motion_chart_rows()}]);
+        var chart = new google.visualization.MotionChart(document.getElementById('cumulative_motion_chart_div'));
+        chart.draw(data, {width: 900, height:500});
       }
       function drawMotionChart() {
         var data = new google.visualization.DataTable();
@@ -43,6 +52,7 @@
         data.addColumn('number', 'Max');
         data.addColumn('number', 'Min');
         data.addColumn('number', 'StdDev');
+        data.addColumn('number', 'Beta');
       
         data.addRows([[#{@assets.join_summary('],[')}]]);
 
@@ -54,3 +64,4 @@
     #table_div
     #chart_div
     #motion_chart_div
+    #cumulative_motion_chart_div

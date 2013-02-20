@@ -1,3 +1,5 @@
+require 'statsample'
+
 class FundResult
 	def initialize
 		@funds = []
@@ -20,12 +22,21 @@ class FundResult
 	def join_summary(separator)
 		result = ""
 		@funds.each_with_index do |fund, index|
-			 result << "'#{fund.name}', #{fund.data_size}, #{fund.sum}, #{fund.mean}, #{fund.max}, #{fund.min}, #{fund.stddev}"
-			 result << separator if index < @funds.size-1
+			 result << "'#{fund.name}', #{fund.data_size}, #{fund.sum}, #{fund.mean}, #{fund.max}, #{fund.min}, #{fund.stddev}, #{beta(fund.data_points.to_scale).round(2)}"
+			 result << separator
 		end
+		result << "'MARKET INDEX', #{market_indexes.size}, #{market_indexes.sum.round(2)}, #{market_indexes.mean.round(2)}, #{market_indexes.max.round(2)}, #{market_indexes.min.round(2)}, #{market_indexes.sd.round(2)}, #{beta(market_indexes).round(2)}"
 		result
 	end
-		
+
+	def beta(rates_of_return)
+		Statsample::Bivariate.covariance(market_indexes, rates_of_return) / market_indexes.variance
+	end
+
+	def market_indexes
+		@market_indexes ||= @funds.map(&:data_points).transpose.map {|values| values.to_scale.mean }.to_scale
+	end
+
 	def render_motion_chart_rows
 		result = ""
 		@funds.each do |fund|
@@ -35,12 +46,19 @@ class FundResult
 			result
 		end
 		result
-		# ['Apples',  new Date (1988,0,1), 1000, 300, 'East'],
-  #         ['Oranges', new Date (1988,0,1), 1150, 200, 'West'],
-  #         ['Bananas', new Date (1988,0,1), 300,  250, 'West'],
-  #         ['Apples',  new Date (1989,6,1), 1200, 400, 'East'],
-  #         ['Oranges', new Date (1989,6,1), 750,  150, 'West'],
-  #         ['Bananas', new Date (1989,6,1), 788,  617, 'West']
+  end
+
+	def render_cumulative_motion_chart_rows
+		result = ""
+		@funds.each do |fund|
+			cumulative = 0.0
+			fund.each_data_point do |data_point|
+				cumulative += data_point.value 
+				result << "['#{fund.name}', new Date(#{data_point.ts.strftime('%Y,%m,%d')}), #{cumulative}],"	
+			end
+			result
+		end
+		result
   end
 
 	def join_data_points(separator)
@@ -78,6 +96,10 @@ class FundResult
 
 		def each_data_point
 			@data_set.data.each {|data_point| yield data_point}
+		end
+
+		def data_points
+			@data_set.data.map(&:value)
 		end
 
 		['sum', 'mean', 'max', 'min', 'stddev'].each do |summary_method|
