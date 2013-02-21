@@ -17,7 +17,13 @@
         data.addColumn('number', 'Cumulative Performance');
         data.addRows([#{@assets.render_cumulative_motion_chart_rows()}]);
         var chart = new google.visualization.MotionChart(document.getElementById('cumulative_motion_chart_div'));
-        chart.draw(data, {width: 900, height:500});
+        var options = {};
+        options['state'] = '{"colorOption":"_UNIQUE_COLOR","yZoomedDataMin":-3,"yAxisOption":"2","iconType":"LINE","dimensions":{"iconDimensions":["dim0"]},"showTrails":false,"sizeOption":"_UNISIZE","uniColorForNonSelected":false,"yLambda":1,"nonSelectedAlpha":0,"time":"2013-03-18","playDuration":15000,"xZoomedDataMin":1360972800000,"xZoomedIn":false,"yZoomedIn":false,"xZoomedDataMax":1363564800000,"xLambda":1,"orderedByY":false,"orderedByX":false,"duration":{"timeUnit":"D","multiplier":1},"xAxisOption":"_TIME","iconKeySettings":[],"yZoomedDataMax":4}';
+
+        options['width'] = 900;
+        options['height'] = 500;
+
+        chart.draw(data, options);
       }
       function drawMotionChart() {
         var data = new google.visualization.DataTable();
@@ -26,7 +32,12 @@
         data.addColumn('number', 'Performance');
         data.addRows([#{@assets.render_motion_chart_rows()}]);
         var chart = new google.visualization.MotionChart(document.getElementById('motion_chart_div'));
-        chart.draw(data, {width: 900, height:500});
+        var options = {};
+        options['state'] = '{"colorOption":"_UNIQUE_COLOR","yZoomedDataMin":-3,"yAxisOption":"2","iconType":"LINE","dimensions":{"iconDimensions":["dim0"]},"showTrails":false,"sizeOption":"_UNISIZE","uniColorForNonSelected":false,"yLambda":1,"nonSelectedAlpha":0,"time":"2013-03-18","playDuration":15000,"xZoomedDataMin":1360972800000,"xZoomedIn":false,"yZoomedIn":false,"xZoomedDataMax":1363564800000,"xLambda":1,"orderedByY":false,"orderedByX":false,"duration":{"timeUnit":"D","multiplier":1},"xAxisOption":"_TIME","iconKeySettings":[],"yZoomedDataMax":4}';
+
+        options['width'] = 900;
+        options['height'] = 500;
+        chart.draw(data, options);
       }
 
       function drawLineChart() {
@@ -46,13 +57,16 @@
       function drawTable() {
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'Fund');
-        data.addColumn('number', 'Count');
         data.addColumn('number', 'Sum');
         data.addColumn('number', 'Mean');
         data.addColumn('number', 'Max');
         data.addColumn('number', 'Min');
         data.addColumn('number', 'StdDev');
         data.addColumn('number', 'Beta');
+        data.addColumn('number', 'Perf. in 30 days');
+        data.addColumn('number', 'Perf. in 60 days');
+        data.addColumn('number', 'Perf. in 90 days');
+        data.addColumn('number', 'Perf. in 360 days');
       
         data.addRows([[#{@assets.join_summary('],[')}]]);
 
@@ -60,8 +74,25 @@
         table.draw(data, {showRowNumber: true});
       }
   %body
-    %h1 Fund Summary
+    %h1 Santander Rio Funds
+    %a{:href => 'http://www.santanderrio.com.ar/individuos/inversiones_fondos.jsp', :target => '_blank'} More info
+    %h2 Summary
+    %b Assets #:
+    %span= @assets.count
+    %br
+    %b Days measured #:
+    %span= @assets.data_points_count
+    %br
+    %b From:
+    %span= @assets.from_date.strftime('%d-%m-%Y')
+    %b To:
+    %span= @assets.to_date.strftime('%d-%m-%Y')
+    %b Days elapsed:
+    %span= @assets.days_elapsed    
+    %br    
+    %br
     #table_div
-    #chart_div
+    %h2 Performance
     #motion_chart_div
+    %h2 Cumulative Performance
     #cumulative_motion_chart_div
