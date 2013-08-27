@@ -34,12 +34,16 @@ class FundResult
 	def join_summary(separator)
 		result = ""
 		@funds.each_with_index do |fund, index|
-			 result << "'#{fund.name}', #{fund.sum}, #{fund.mean}, #{fund.max}, #{fund.min}, #{fund.stddev}, #{beta(fund.data_points.to_scale).round(2)}, #{fund.performance_in_days(30).round(2)}, #{fund.performance_in_days(60).round(2)}, #{fund.performance_in_days(90).round(2)}, #{fund.performance_in_days(360).round(2)}"
+			 result << "'#{fund.name}', #{fund.sum}, #{fund.mean}, #{fund.max}, #{fund.min}, #{fund.stddev}, #{beta(fund.data_points.to_scale).round(2)}, #{sharpe_ratio(fund)}, #{fund.performance_in_days(30).round(2)}, #{fund.performance_in_days(60).round(2)}, #{fund.performance_in_days(90).round(2)}, #{fund.performance_in_days(360).round(2)}"
 			 result << separator
 		end
-		result << "'MARKET INDEX', #{market_indexes.sum.round(2)}, #{market_indexes.mean.round(2)}, #{market_indexes.max.round(2)}, #{market_indexes.min.round(2)}, #{market_indexes.sd.round(2)}, #{beta(market_indexes).round(2)}, 0,0,0,0"
+		result << "'MARKET INDEX', #{market_indexes.sum.round(2)}, #{market_indexes.mean.round(2)}, #{market_indexes.max.round(2)}, #{market_indexes.min.round(2)}, #{market_indexes.sd.round(2)}, #{beta(market_indexes).round(2)}, 0, 0,0,0,0"
 		result
 	end
+
+  def sharpe_ratio(fund)
+    fund.stddev.zero? ? 0 : (Math.sqrt(250) * (fund.mean / fund.stddev)).round(2)
+  end
 
 	def beta(rates_of_return)
 		Statsample::Bivariate.covariance(market_indexes, rates_of_return) / market_indexes.variance
@@ -142,7 +146,10 @@ class FundResult
 			define_method(summary_method) do
 				@data_set.summary.send(summary_method).round(2)
 			end
-		end
+		end		
+	end
+
+	class TempoDbFund < Fund
 
 	end
 end
