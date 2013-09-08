@@ -1,21 +1,13 @@
 GEM
   remote: http://rubygems.org/
   specs:
-    better_errors (0.9.0)
-      coderay (>= 1.0.0)
-      erubis (>= 2.6.6)
-    binding_of_caller (0.7.2)
-      debug_inspector (>= 0.0.1)
     clbustos-rtf (0.4.2)
-    coderay (1.1.0)
     coffee-script (2.2.0)
       coffee-script-source
       execjs
     coffee-script-source (1.6.3)
-    debug_inspector (0.0.2)
     dirty-memoize (0.0.4)
     distribution (0.7.0)
-    erubis (2.7.0)
     execjs (2.0.1)
     extendmatrix (0.3.1)
     fastercsv (1.5.5)
@@ -105,8 +97,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  better_errors
-  binding_of_caller
   gon-sinatra
   haml
   nokogiri

@@ -1,5 +1,3 @@
-require "better_errors"
-
 require_relative "./models/daily_return"
 require_relative "./models/daily_return_series"
 require_relative "./models/asset"
@@ -19,9 +17,6 @@ class AssetPrices < Sinatra::Base
     ENV['TEMPODB_API_PORT']= '443'
     ENV['TEMPODB_API_SECRET']= '979fd9f0fac942d5868c2accd2772b2c'
     ENV['TEMPODB_API_SECURE']= 'True'
-
-    #use BetterErrors::Middleware
-    #BetterErrors.application_root = File.dirname(__FILE__)
   end
 
   set :public_folder, File.dirname(__FILE__) + '/assets'
