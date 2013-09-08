@@ -1,5 +1,4 @@
-require 'tempodb'
-require "#{File.dirname(__FILE__)}/fund_result"
+
 
 class TempoDbRepository
 
@@ -35,11 +34,9 @@ class TempoDbRepository
   end
 
   def all_funds_from(start)
-    result = FundResult.new  
     get_series.collect do |series|
-      result.add_fund(series.key, get_data_sets(series, start))
+      DailyReturnSeries.new(series.key, TempoDbDailyReturnAdapter.new(get_data_sets(series, start)), TempoDbStatsCalculator.new)
     end
-    result
   end
 
   private

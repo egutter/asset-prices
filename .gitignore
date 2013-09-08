@@ -1,1 +1,3 @@
 .rvmrc
+.idea/*
+.DS_STORE

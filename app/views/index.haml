@@ -1,99 +1,84 @@
 !!!
 %html
   %head
-    %script{:type=>'text/javascript', :src=>'https://www.google.com/jsapi'}
-    :javascript
-      google.load('visualization', '1', {packages:['table', 'motionchart', 'corechart']});
-      google.setOnLoadCallback(drawCharts);
-      function drawCharts() {
-        drawTable();
-        drawMotionChart();
-        drawCumulativeMotionChart();
-      }
-      function drawCumulativeMotionChart() {
-        var data = new google.visualization.DataTable();
-        data.addColumn('string', 'Fund');
-        data.addColumn('date', 'Date');
-        data.addColumn('number', 'Cumulative Performance');
-        data.addRows([#{@assets.render_cumulative_motion_chart_rows()}]);
-        var chart = new google.visualization.MotionChart(document.getElementById('cumulative_motion_chart_div'));
-        var options = {};
-        options['state'] = '{"colorOption":"_UNIQUE_COLOR","yZoomedDataMin":-3,"yAxisOption":"2","iconType":"LINE","dimensions":{"iconDimensions":["dim0"]},"showTrails":false,"sizeOption":"_UNISIZE","uniColorForNonSelected":false,"yLambda":1,"nonSelectedAlpha":0,"time":"2013-03-18","playDuration":15000,"xZoomedDataMin":1360972800000,"xZoomedIn":false,"yZoomedIn":false,"xZoomedDataMax":1363564800000,"xLambda":1,"orderedByY":false,"orderedByX":false,"duration":{"timeUnit":"D","multiplier":1},"xAxisOption":"_TIME","iconKeySettings":[],"yZoomedDataMax":4}';
-
-        options['width'] = 900;
-        options['height'] = 500;
-
-        chart.draw(data, options);
-      }
-      function drawMotionChart() {
-        var data = new google.visualization.DataTable();
-        data.addColumn('string', 'Fund');
-        data.addColumn('date', 'Date');
-        data.addColumn('number', 'Performance');
-        data.addRows([#{@assets.render_motion_chart_rows()}]);
-        var chart = new google.visualization.MotionChart(document.getElementById('motion_chart_div'));
-        var options = {};
-        options['state'] = '{"colorOption":"_UNIQUE_COLOR","yZoomedDataMin":-3,"yAxisOption":"2","iconType":"LINE","dimensions":{"iconDimensions":["dim0"]},"showTrails":false,"sizeOption":"_UNISIZE","uniColorForNonSelected":false,"yLambda":1,"nonSelectedAlpha":0,"time":"2013-03-18","playDuration":15000,"xZoomedDataMin":1360972800000,"xZoomedIn":false,"yZoomedIn":false,"xZoomedDataMax":1363564800000,"xLambda":1,"orderedByY":false,"orderedByX":false,"duration":{"timeUnit":"D","multiplier":1},"xAxisOption":"_TIME","iconKeySettings":[],"yZoomedDataMax":4}';
-
-        options['width'] = 900;
-        options['height'] = 500;
-        chart.draw(data, options);
-      }
-
-      function drawLineChart() {
-        var data = google.visualization.arrayToDataTable([
-          ['Date', '#{@assets.fund_names.join("','")}'],
-          [#{@assets.join_data_points('],[')}]
-        ]);
-        var options = {
-          title: 'Funds Performance',
-          height: 400
-        };
-
-        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-        chart.draw(data, options);
-      }
-
-      function drawTable() {
-        var data = new google.visualization.DataTable();
-        data.addColumn('string', 'Fund');
-        data.addColumn('number', 'Sum');
-        data.addColumn('number', 'Mean');
-        data.addColumn('number', 'Max');
-        data.addColumn('number', 'Min');
-        data.addColumn('number', 'StdDev');
-        data.addColumn('number', 'Beta');
-        data.addColumn('number', 'Sharpe');
-        data.addColumn('number', 'Perf. in 30 days');
-        data.addColumn('number', 'Perf. in 60 days');
-        data.addColumn('number', 'Perf. in 90 days');
-        data.addColumn('number', 'Perf. in 360 days');
-      
-        data.addRows([[#{@assets.join_summary('],[')}]]);
-
-        var table = new google.visualization.Table(document.getElementById('table_div'));
-        table.draw(data, {showRowNumber: true});
-      }
+    #{include_gon}
+    %script{:type=>'text/javascript', :src=>'http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js'}
+    %script{:type=>'text/javascript', :src=>'http://code.highcharts.com/highcharts.js'}
+    -#%script{:type=>'text/javascript', :src=>'http://code.highcharts.com/stock/highstock.js'}
+    %script{:type=>'text/javascript', :src=>'javascripts/daily_returns_chart.js'}
+    %script{:type=>'text/javascript', :src=>'javascripts/cumulative_daily_returns_chart.js'}
+    %script{:type=>'text/javascript', :src=>'javascripts/libs/jquery.tablesorter.js'}
+    %script{:type=>'text/javascript', :src=>'javascripts/libs/chosen.jquery.min.js'}
+    %script{:type=>'text/javascript', :src=>'javascripts/libs/underscore.min.js'}
+    %script{:type=>'text/javascript', :src=>'javascripts/summary_table.js'}
+    %link{:rel=>"stylesheet", :href=>'stylesheets/tablesorter-themes/blue/style.css', :type=>"text/css", :media=>"print, projection, screen"}
+    %link{:rel=>"stylesheet", :href=>"stylesheets/chosen.css?#{Time.now.to_i}", :type=>"text/css", :media=>"print, projection, screen"}
   %body
     %h1 Santander Rio Funds
     %a{:href => 'http://www.santanderrio.com.ar/individuos/inversiones_fondos.jsp', :target => '_blank'} More info
+    %h2 Filters
+    %form{:class=>"form-horizontal", :action => 'filter', :method => 'post'}
+      %select{:name => 'filter_by_asset_names[]', :id=>"asset-filter", :'data-placeholder'=>"Select an asset...", :class=>"input-large chzn-select", :multiple=> true}
+        -Asset.all_symbols.sort.each do |asset_name|
+          - if @selected_assets.include?(asset_name)
+            %option{:value=>"#{asset_name}", :selected => true}=asset_name
+          - else
+            %option{:value=>"#{asset_name}"}=asset_name
+      %br
+      %input{:type => 'checkbox', :value => true, :name => 'include_all_funds'} Include all funds
+      %br
+      %input{:type => 'checkbox', :value => true, :name => 'include_all_stocks'} Include all stocks
+      %br
+      %button{:type=>"submit", :id=>"filter-assets", :class=>"btn btn-primary pull-right"} Filtrar
     %h2 Summary
     %b Assets #:
-    %span= @assets.count
+    %span= @stats_report.count
     %br
     %b Days measured #:
-    %span= @assets.data_points_count
+    %span= @stats_report.data_points_count
     %br
     %b From:
-    %span= @assets.from_date.strftime('%d-%m-%Y')
+    %span= @stats_report.from_date.strftime('%d-%m-%Y')
     %b To:
-    %span= @assets.to_date.strftime('%d-%m-%Y')
+    %span= @stats_report.to_date.strftime('%d-%m-%Y')
     %b Days elapsed:
-    %span= @assets.days_elapsed    
+    %span= @stats_report.days_elapsed
     %br    
     %br
-    #table_div
+    %table{:id=>"summary-table", :class=>"tablesorter"}
+      %thead
+        %tr
+          %th Fund
+          %th Sum
+          %th Mean
+          %th Max
+          %th Min
+          %th StDev
+          %th Beta
+          %th Sharpe
+          %th Sortino
+          %th 30d
+          %th 60d
+          %th 90d
+          %th 360d
+      %tbody
+        - @stats_report.each do |asset|
+          %tr
+            %td= asset.name
+            %td= asset.sum
+            %td= asset.mean
+            %td= asset.max
+            %td= asset.min
+            %td= asset.stddev
+            %td= asset.beta
+            %td= asset.sharpe_ratio
+            %td= asset.sortino_ratio
+            %td= asset.performance_in_days(30)
+            %td= asset.performance_in_days(60)
+            %td= asset.performance_in_days(90)
+            %td= asset.performance_in_days(360)
+
     %h2 Performance
-    #motion_chart_div
+    #daily_returns
     %h2 Cumulative Performance
-    #cumulative_motion_chart_div
+    #cumulative_daily_returns
