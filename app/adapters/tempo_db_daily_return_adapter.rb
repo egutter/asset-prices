@@ -9,15 +9,15 @@ class TempoDbDailyReturnAdapter
   end
 
   def each
-    @data_set.data.each {|data_point| yield DailyReturn.new(data_point.ts, data_point.value) }
+    @data_set.data.each {|data_point| yield DailyReturn.new(data_point.ts, data_point.value/100) }
   end
 
   def map
-    @data_set.data.map {|data_point| yield DailyReturn.new(data_point.ts, data_point.value) }
+    @data_set.data.map {|data_point| yield DailyReturn.new(data_point.ts, data_point.value/100) }
   end
 
   def to_a
-    @data_set.data.map {|data_point| DailyReturn.new(data_point.ts, data_point.value) }
+    @data_set.data.map {|data_point| DailyReturn.new(data_point.ts, data_point.value/100) }
   end
 
   def summary
@@ -26,11 +26,11 @@ class TempoDbDailyReturnAdapter
 
   def first
     first_data_set = @data_set.data.first
-    DailyReturn.new(first_data_set.ts, first_data_set.value)
+    DailyReturn.new(first_data_set.ts, first_data_set.value/100)
   end
 
   def last
     last_data_set = @data_set.data.last
-    DailyReturn.new(last_data_set.ts, last_data_set.value)
+    DailyReturn.new(last_data_set.ts, last_data_set.value/100)
   end
 end

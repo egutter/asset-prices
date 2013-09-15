@@ -32,10 +32,10 @@ class StatsReport
 
   def cumulative_daily_returns_to_json
     filtered_assets.map do |asset|
-      cumulative = 0.0
+      cumulative = 1
       {name: asset.asset_name,
        data: asset.daily_returns.map do |daily_return|
-         cumulative += daily_return.value
+         cumulative = cumulative * (1 + daily_return.value)
          [daily_return.date, cumulative.round(2)]
        end
       }

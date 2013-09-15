@@ -1,5 +1,3 @@
-
-
 class TempoDbRepository
 
   def initialize(config = {})

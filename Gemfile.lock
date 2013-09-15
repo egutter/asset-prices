@@ -1,6 +1,9 @@
 GEM
   remote: http://rubygems.org/
   specs:
+    bson (1.9.2)
+    bson_ext (1.9.2)
+      bson (~> 1.9.2)
     clbustos-rtf (0.4.2)
     coffee-script (2.2.0)
       coffee-script-source
@@ -10,17 +13,41 @@ GEM
     distribution (0.7.0)
     execjs (2.0.1)
     extendmatrix (0.3.1)
+    faraday (0.8.8)
+      multipart-post (~> 1.2.0)
     fastercsv (1.5.5)
     gon-sinatra (0.1.0)
       sinatra
     haml (3.1.4)
+    hashie (2.0.5)
     hike (1.2.3)
+    httpauth (0.2.0)
     json (1.7.6)
+    jwt (0.1.8)
+      multi_json (>= 1.5)
     listen (0.7.2)
     minimization (0.2.1)
       text-table (~> 1.2)
+    mongo (1.9.2)
+      bson (~> 1.9.2)
     multi_json (1.7.9)
+    multipart-post (1.2.0)
     nokogiri (1.5.5)
+    oauth2 (0.8.1)
+      faraday (~> 0.8)
+      httpauth (~> 0.1)
+      jwt (~> 0.1.4)
+      multi_json (~> 1.0)
+      rack (~> 1.2)
+    omniauth (1.1.4)
+      hashie (>= 1.2, < 3)
+      rack
+    omniauth-github (1.1.1)
+      omniauth (~> 1.0)
+      omniauth-oauth2 (~> 1.1)
+    omniauth-oauth2 (1.1.1)
+      oauth2 (~> 0.8.0)
+      omniauth (~> 1.0)
     prawn (0.8.4)
       prawn-core (>= 0.8.4, < 0.9)
       prawn-core (>= 0.8.4, < 0.9)
@@ -62,6 +89,10 @@ GEM
       sprockets
       sprockets-helpers
       sprockets-sass
+    sinatra-session (1.0.0)
+      sinatra (>= 1.0)
+    sinatra-support (1.2.2)
+      sinatra (>= 1.0)
     spreadsheet (0.6.9)
       ruby-ole (>= 1.0)
     sprockets (2.10.0)
@@ -97,13 +128,18 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bson_ext
   gon-sinatra
   haml
+  mongo
   nokogiri
+  omniauth-github
   rerun
   shotgun
   sinatra
   sinatra-asset-pipeline
+  sinatra-session
+  sinatra-support
   statsample
   tempodb
   yahoofinance

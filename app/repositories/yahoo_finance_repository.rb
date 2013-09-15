@@ -12,8 +12,9 @@ class YahooFinanceRepository
 
   def all_daily_returns_filter_by(start, symbols)
     days = ((Time.now-start)/ONE_DAY).to_i
-    symbols.map do |symbol|
+    all_daily_returns = symbols.map do |symbol|
       daily_returns = []
+      puts "Fetching symbol #{symbol}"
       result = YahooFinance::get_historical_quotes_days(symbol, days ).reverse
       last_close_price = 0
       first = true
@@ -25,13 +26,15 @@ class YahooFinanceRepository
           first = false
           next
         else
-          daily_return = (((row[6].to_f/last_close_price)-1)*100).round(2)
+          daily_return = (((row[6].to_f/last_close_price)-1)).round(2)
           last_close_price = row[6].to_f
           daily_returns << DailyReturn.new(price_date, daily_return)
         end
       }
       DailyReturnSeries.new(symbol, daily_returns, StatsCalculator.new)
     end
+    puts "All symbols fetched."
+    all_daily_returns
   end
 
   class AlwaysIncludeFilter

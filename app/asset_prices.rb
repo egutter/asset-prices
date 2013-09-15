@@ -21,14 +21,47 @@ class AssetPrices < Sinatra::Base
 
   set :public_folder, File.dirname(__FILE__) + '/assets'
 
+  register Sinatra::Session
   register Gon::Sinatra
+  register Sinatra::Numeric
 
+  use OmniAuth::Builder do
+    provider :github, ENV['GITHUB_KEY'], ENV['GITHUB_SECRET']
+  end
+
+  set :session_fail, '/login'
+  set :session_secret, 'JMNeYQVPYtUpLU62kwpwnvLC!KqQuB5gUQDmRKnLrRw7kr4vE'
+
+  %w(get post).each do |method|
+    send(method, "/auth/:provider/callback") do
+      session_start!
+      @user = request.env['omniauth.auth'].info.to_json
+      session['access_token'] = session['oauth'].get_access_token(params[:code])
+      env['omniauth.auth'] # => OmniAuth::AuthHash
+    end
+  end
 
   get '/' do
+    #session!
     @selected_assets = []
     from_date = Time.now - (60 * 60 * 24 * 365)
     build_report(from_date, Asset.all_indexes)
     haml :index
+  end
+
+  get '/login' do
+    if session?
+      redirect '/'
+    else
+      '<form method="POST" action="/auth/github">' +
+      '<input type="submit" value="Sign with Github">' +
+      '</form>'
+    end
+  end
+
+  get '/logout' do
+    session_end!
+    redirect '/'
   end
 
   post '/filter' do

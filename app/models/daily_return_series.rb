@@ -43,16 +43,19 @@ class DailyReturnSeries
   end
 
   def beta(market_index = self)
-    @stats_calculator.beta(self, market_index)
+    @beta ||= @stats_calculator.beta(self, market_index)
   end
 
   def include_date?(a_date)
     @daily_returns.any? {|dr| dr.date == a_date}
   end
 
-  ['sum', 'mean', 'max', 'min', 'stddev', 'sharpe_ratio', 'sortino_ratio'].each do |stats_method|
+  ['sum', 'mean', 'max', 'min', 'stddev', 'sharpe_ratio', 'sortino_ratio', 'total_return'].each do |stats_method|
     define_method(stats_method) do
-      @stats_calculator.send(stats_method, self)
+      cached_value = instance_variable_get("@#{stats_method}")
+      return cached_value if cached_value
+      result = @stats_calculator.send(stats_method, self)
+      instance_variable_set("@#{stats_method}", result)
     end
   end
 end

@@ -49,7 +49,7 @@
       %thead
         %tr
           %th Fund
-          %th Sum
+          %th Total Return
           %th Mean
           %th Max
           %th Min
@@ -65,7 +65,7 @@
         - @stats_report.each do |asset|
           %tr
             %td= asset.name
-            %td= asset.sum
+            %td= percentage(asset.total_return * 100)
             %td= asset.mean
             %td= asset.max
             %td= asset.min
@@ -73,10 +73,10 @@
             %td= asset.beta
             %td= asset.sharpe_ratio
             %td= asset.sortino_ratio
-            %td= asset.performance_in_days(30)
-            %td= asset.performance_in_days(60)
-            %td= asset.performance_in_days(90)
-            %td= asset.performance_in_days(360)
+            %td= percentage(asset.performance_in_days(30) * 100)
+            %td= percentage(asset.performance_in_days(60) * 100)
+            %td= percentage(asset.performance_in_days(90) * 100)
+            %td= percentage(asset.performance_in_days(360) * 100)
 
     %h2 Performance
     #daily_returns

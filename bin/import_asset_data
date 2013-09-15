@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
-require File.join(File.dirname(__FILE__), '../', 'app', 'santander_funds_importer')
-require File.join(File.dirname(__FILE__), '../', 'app', 'tempo_db_repository')
+require File.join(File.dirname(__FILE__), '../', 'app', 'importers', 'santander_funds_importer')
+require File.join(File.dirname(__FILE__), '../', 'app', 'repositories', 'tempo_db_repository')
 
 puts "Starting import process.."
 repository = TempoDbRepository.new
