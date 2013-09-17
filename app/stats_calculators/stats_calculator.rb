@@ -2,8 +2,9 @@ require 'statsample'
 
 class StatsCalculator
 
+  SHARP_CONST = Math.sqrt(250)
   def sharpe_ratio(series)
-    self.stddev(series).zero? ? 0 : (Math.sqrt(250) * (self.mean(series) / self.stddev(series))).round(4)
+    self.stddev(series).zero? ? 0 : (SHARP_CONST * (self.mean(series) / self.stddev(series))).round(4)
   end
 
   def sortino_ratio(series)
