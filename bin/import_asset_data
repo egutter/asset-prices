@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require 'tempodb'
+
 require File.join(File.dirname(__FILE__), '../', 'app', 'importers', 'santander_funds_importer')
 require File.join(File.dirname(__FILE__), '../', 'app', 'repositories', 'tempo_db_repository')
 
