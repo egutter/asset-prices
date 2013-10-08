@@ -76,7 +76,7 @@ class AssetPrices < Sinatra::Base
   end
 
   def build_report(from_date, include_asset_names)
-    @funds = TempoDbRepository.new().all_funds_from(from_date)
+    @funds = TempoDbRepository.new().all_funds_from(from_date, Asset.santander_fund_symbols)
     fund_market = Market.new(@funds, TempoDbMarketIndexBuilder.build(@funds))
     stock_symbols = Asset.merval_stock_symbols.select {|symbol| include_asset_names.include?(symbol) }
     merval_index = yahoo_repository.merval_index(fund_market.starts_at)

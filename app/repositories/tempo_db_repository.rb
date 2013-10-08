@@ -31,10 +31,10 @@ class TempoDbRepository
     @client.read(Time.utc(ts.year, ts.month, ts.day, 0, 0, 0), Time.utc(ts.year, ts.month, ts.day, 23, 59, 59))
   end
 
-  def all_funds_from(start)
+  def all_funds_from(start, asset_names)
     get_series.collect do |series|
       DailyReturnSeries.new(series.key, TempoDbDailyReturnAdapter.new(get_data_sets(series, start)), TempoDbStatsCalculator.new)
-    end
+    end.select {|series| asset_names.include?(series.asset_name)}
   end
 
   private
