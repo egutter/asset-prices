@@ -13,6 +13,10 @@ class Asset
     %w{ALUA.BA APBR.BA BHIP.BA BMA.BA CEPU2.BA COME.BA CRES.BA EDN.BA ERAR.BA FRAN.BA GGAL.BA INDU.BA IRSA.BA LEDE.BA MIRG.BA MOLI.BA PAMP.BA PESA.BA STD.BA TECO2.BA TEF.BA TGNO4.BA TRAN.BA TS.BA YPFD.BA}
   end
 
+  def self.merval_stock_symbols_with_index
+    merval_stock_symbols << MERVAL_MARKET_INDEX
+  end
+
   def self.all_symbols
     santander_fund_symbols.concat merval_stock_symbols
   end

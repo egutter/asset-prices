@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+
+require 'yahoofinance'
+require 'yaml'
+
+require File.join(File.dirname(__FILE__), '../', 'app', 'models', 'daily_return')
+require File.join(File.dirname(__FILE__), '../', 'app', 'models', 'daily_return_series')
+require File.join(File.dirname(__FILE__), '../', 'app', 'stats_calculators', 'stats_calculator')
+require File.join(File.dirname(__FILE__), '../', 'app', 'models', 'asset')
+require File.join(File.dirname(__FILE__), '../', 'app', 'repositories', 'yahoo_finance_repository')
+
+starts_at = Time.now - (60 * 60 * 24 * 10)
+yahoo_repository = YahooFinanceRepository.new()
+merval_index = yahoo_repository.merval_index(starts_at)
+daily_returns = yahoo_repository.all_daily_returns_from(starts_at, Asset.merval_stock_symbols, merval_index)
+puts YAML.dump(daily_returns)

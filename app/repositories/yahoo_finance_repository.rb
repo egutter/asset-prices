@@ -21,14 +21,20 @@ class YahooFinanceRepository
       result.each { |row|
         date_values = row[0].split('-')
         price_date = Time.mktime(date_values[0].to_i, date_values[1].to_i, date_values[2].to_i)
+        adjusted_close = row[6]
+        open = row[1]
+        high = row[2]
+        low = row[3]
+        close = row[4]
+        volume = row[5]
         if first
-          last_close_price = row[6].to_f
+          last_close_price = adjusted_close.to_f
           first = false
           next
         else
-          daily_return = (((row[6].to_f/last_close_price)-1)).round(2)
-          last_close_price = row[6].to_f
-          daily_returns << DailyReturn.new(price_date, daily_return)
+          daily_return = (((adjusted_close.to_f/last_close_price)-1)).round(2)
+          last_close_price = adjusted_close.to_f
+          daily_returns << DailyReturn.new(price_date, daily_return, adjusted_close, open, high, low, close, volume)
         end
       }
       DailyReturnSeries.new(symbol, daily_returns, StatsCalculator.new)
